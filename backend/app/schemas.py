@@ -129,3 +129,100 @@ class BookingCreate(BaseModel):
     preferred_date: date | None = None
     preferred_time: time | None  = None
     notes: str = Field(default="", max_length=1000)
+    
+class BookingStatusIn(BaseModel):
+    status: Literal["accepted", "declined", "cancelled", "completed"]
+    
+class ListingBrief(BaseModel):
+    id: int
+    title: str
+    icon: str
+    
+class BookingOut(BaseModel):
+    id: int
+    listing: ListingBrief
+    requester: UserBrief
+    provider: UserBrief
+    preffered_date:date | None
+    preffered_time: time | None
+    notes: str
+    status: str
+    created_at: datetime
+    
+    
+# --------- MESSAGING ------------
+class MessageIn(BaseModel):
+    body: str = Field(min_length=1, max_length=2000)
+    
+    @field_validator("body")
+    @classmethod
+    def _not_blank(cls, v: str) -> str :
+        if not v.strip():
+            raise ValueError("Message cannot be blank")
+        return v.strip()
+    
+
+class ConversationStart(MessageIn):
+    listing_id: int | None = None
+    recipient_id: int | None = None
+    
+class MessageOut(BaseModel):
+    id: int
+    conversation_id: int
+    sender_id: int
+    body: str
+    is_read: bool
+    created_at: datetime
+
+
+class ConversationOut(BaseModel):
+    id: int
+    listing_id: str | None
+    listing_title: str | None
+    other_user: UserBrief
+    last_message: str | None
+    last_message_at: datetime | None
+    unread_count: int
+
+
+# ---------- REVIEWS ---------
+class ReviewOut(BaseModel):
+    id: int
+    listing_id: int
+    listing_title: str
+    rating: int
+    comment: str
+    reviewer: UserBrief
+    created_at: datetime
+    
+class ReviewsOut(BaseModel):
+    average: float
+    count: int
+    items: list[ReviewOut]
+    
+
+# ------- BULLETIN ---------
+class PostOut(BaseModel):
+    id: int
+    title: str
+    body: str
+    status: str
+    author: UserBrief
+    flag_count: int
+    is_mine: bool
+    created_at: datetime
+    
+
+# ------ A D M I N ---------
+class StatsOut(BaseModel):
+    users: int
+    unverified_users: int
+    listings: int
+    bookings: int
+    messages: int
+    reviews: int
+    posts: int
+    flagged_posts: int
+
+
+    
