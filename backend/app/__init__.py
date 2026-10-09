@@ -1,0 +1,1 @@
+"""CPUT Community Store"""
