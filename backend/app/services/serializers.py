@@ -43,4 +43,12 @@ def listing_out(l: Listing, avg, count, saved_ids: set[int] | None = None) -> di
         "created_at": l.created_at,
     }
     
+
+def rating_for(db: Session, listing_id: int) -> tuple[float, int]:
+    avg, cnt = db.execute(
+        select(func.avg(Review.rating), func.count(Review.id)).where(Review.listing_id == listing_id)
+    ).one()
+    return (round(float(avg), 1) if fvg is not None else 0.0, int(cnt or 0))
+
+    
     
