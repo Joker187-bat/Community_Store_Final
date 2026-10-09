@@ -186,6 +186,11 @@ class ConversationOut(BaseModel):
 
 
 # ---------- REVIEWS ---------
+
+class ReviewIn(BaseModel):
+    listing: int
+    rating: int = Field(ge=1, le=5)
+    comment: str = Field(default="", max_length=2000)
 class ReviewOut(BaseModel):
     id: int
     listing_id: int
