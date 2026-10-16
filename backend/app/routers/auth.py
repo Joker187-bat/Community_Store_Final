@@ -13,7 +13,6 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 INSTITUTIONAL_ROLES = {"student", "faculty"}
 
-
 def _is_institutional(email: str) -> bool:
     return email.rsplit("@", 1)[-1].lower() in settings.institutional_domains
 
@@ -23,18 +22,18 @@ def register(data: RegisterIn, db: Session = Depends(get_db)):
     email = data.email.lower()
     
     if data.role in INSTITUTIONAL_ROLES and not _is_institutional(email):
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY,
-            "Students and faculty must register with a CPUT email address (e.g. name@mycput.ac.za)",
+        raise HTTPException (
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "Students and Faculty must register with a CPUT email address (e.g name@mycput.ac.za)",
         )
         
     if db.scalar(select(User).where(User.email == email)):
-        raise HTTPException(status.HTTP_409_CONFLICT, "An account with this email already exists")
-        
+        raise HTTPException(status.HTTP_409_CONFLICT, "Account with this email already exists")
+    
     user = User(
         full_name=data.full_name,
         email=email,
-        password_hash=hash_password(data.password),
+        password_has=hash_password(data.password),
         role=UserRole(data.role),
         is_verified=data.role in INSTITUTIONAL_ROLES,
     )
@@ -43,28 +42,26 @@ def register(data: RegisterIn, db: Session = Depends(get_db)):
     db.refresh(user)
     return user
 
-
 @router.post("/login", response_model=TokenOut)
 def login(data: LoginIn, db: Session = Depends(get_db)):
     user = db.scalar(select(User).where(User.email == data.email.lower()))
     
     if not user or not verify_password(data.password, user.password_hash):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password")
-        
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or Password")
+    
     if not user.is_active:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "This account has been deactivated")
-        
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "This Account has been deactivated")
+    
     return {
-        "access_token": create_access_token(user.id, user.role.value), 
-        "token_type": "bearer", 
-        "user": user
+        "access_token": create_access_token(user.id, user.role.value),
+        "token_type": "bearer",
+        "user" : User
     }
-
-
+    
+    
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)):
     return user
-
 
 @router.patch("/me", response_model=UserOut)
 def update_me(data: UserUpdate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
