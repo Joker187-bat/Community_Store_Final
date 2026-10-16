@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException,status
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session, joinedLoad
+from sqlalchemy.orm import Session, joinedload
 
 from ..database import get_db
 from ..deps import require_admin
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/admin", tags= ["Administration"], dependencies=[Depe
 @router.get("/stats", response_model=StatsOut)
 def stats (db: Session = Depends(get_db)):
     def n (model, *where):
-        return int (db, scalar(select(func.count()).select_from(model).where(*where)) or 0)
+        return int (db.scalar(select(func.count()).select_from(model).where(*where)) or 0)
     
     return {
         "users" : n(User),
@@ -42,7 +42,7 @@ def flagged_posts(db: Session = Depends(get_db), admin:User = Depends(require_ad
 
 @router.post("/posts/{post_id}/restore", response_model=PostOut)
 def restore_post (post_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    p = db.scalars(select(BulletinPost).where(BulletinPost.id == post_id).options(joinedLoad(BulletinPost.author))).first()
+    p = db.scalars(select(BulletinPost).where(BulletinPost.id == post_id).options(joinedload(BulletinPost.author))).first()
     if p is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Post Not Found")
     for f in db.scalars(select(PostFlag).where(PostFlag.post_id == p.id)):
@@ -53,7 +53,7 @@ def restore_post (post_id: int, db: Session = Depends(get_db), admin: User = Dep
 
 @router.post("/posts/{post_id}/remoove", response_model=PostOut)
 def remove_post(post_id: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
-    p = db.scalars(select(BulletinPost).where(BulletinPost.id == post_id).options(joinedLoad(BulletinPost.author))).first()
+    p = db.scalars(select(BulletinPost).where(BulletinPost.id == post_id).options(joinedload(BulletinPost.author))).first()
     if p is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Post Not Found")
     p.status = PostStatus.removed

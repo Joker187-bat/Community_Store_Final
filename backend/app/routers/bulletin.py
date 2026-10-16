@@ -45,6 +45,9 @@ def feed(mine: bool = False, db: Session = Depends(get_db), user: User | None = 
 
 @router.post("", response_model=PostOut, status_code=status.HTTP_201_CREATED)
 def create_post(data: PostIn, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    p = BulletinPost(author_id=user.id, title=data.title.strip(), body=data.body.strip())
+    db.add(p)
+    db.commit()
     p = db.scalars(select(BulletinPost).where(BulletinPost.id == p.id).options(joinedload(BulletinPost.author))).one()
     return post_out(p, {}, user)
 

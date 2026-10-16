@@ -191,6 +191,7 @@ class ReviewIn(BaseModel):
     listing: int
     rating: int = Field(ge=1, le=5)
     comment: str = Field(default="", max_length=2000)
+    listing_id = None
 class ReviewOut(BaseModel):
     id: int
     listing_id: int

@@ -10,7 +10,7 @@ from ..models import Booking, BookingStatus, Listing, Review, User
 from ..schemas import ReviewIn, ReviewOut, ReviewsOut
 from ..services.serializers import user_brief
 
-router = APIRouter(orefix="/reviews", tags=["Reviews"])
+router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
 
 def _out (r: Review) -> dict:

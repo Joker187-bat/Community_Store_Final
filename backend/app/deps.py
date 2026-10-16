@@ -10,7 +10,7 @@ from .security import decode_access_token
 _bearer = HTTPBearer(auto_error=False)
 
 
-def user_from_credentials(creds: HTTPAuthorizationCredentials | None, db: Session)  -> User | None:
+def _user_from_credentials(creds: HTTPAuthorizationCredentials | None, db: Session)  -> User | None:
     if creds is None:
         return None
     payload = decode_access_token(creds.credentials)

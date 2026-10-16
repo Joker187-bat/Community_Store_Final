@@ -61,7 +61,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = ts()
     
-    listings: Mapped [list["listing"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
+    listings: Mapped [list["Listing"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
     
 
 class Category(Base):

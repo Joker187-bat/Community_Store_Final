@@ -46,10 +46,10 @@ def _summary(db: Session, c: Conversation, me: User) -> dict:
 def list_conversations(db:Session = Depends(get_db), user: User = Depends(get_current_user)):
     convs = db.scalars(
         select(Conversation)
-        .where(or_(Conversation.user_a_id = user.id, Conversation.user_b_id == user.id))
+        .where(or_(Conversation.user_a_id == user.id, Conversation.user_b_id == user.id))
         .options(joinedload(Conversation.user_a), joinedload(Conversation.user_b), joinedload(Conversation.listing))
     ).all()
-    out = [_summary(db, c, user)f for c in convs]
+    out = [_summary(db, c, user) for c in convs]
     out.sort(key=lambda s: s["last_message_at"], reverse=True)
     return out
 

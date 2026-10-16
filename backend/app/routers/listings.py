@@ -20,7 +20,7 @@ def _saved_ids(db: Session, user: User | None) -> set[int]:
         return set()
     return set(db.scalars(select(SavedListing.listing_id).where(SavedListing.user_id == user.id)))
 
-@router.get("/categories" response_model=list[CategoryOut])
+@router.get("/categories", response_model=list[CategoryOut])
 def categories(db: Session = Depends(get_db)):
     return db.scalars(select(Location).order_by(Location.name)).all()
 

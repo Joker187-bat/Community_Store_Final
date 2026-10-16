@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from ..models import Listing, Review, User
 
-def user_brief(u: user) - > dict:
+def user_brief(u: User) -> dict:
     return {"id": u.id, "full_name": u.full_name, "role": u.role.value, "is_verified": u.is_verified}
 
 
@@ -48,7 +48,7 @@ def rating_for(db: Session, listing_id: int) -> tuple[float, int]:
     avg, cnt = db.execute(
         select(func.avg(Review.rating), func.count(Review.id)).where(Review.listing_id == listing_id)
     ).one()
-    return (round(float(avg), 1) if fvg is not None else 0.0, int(cnt or 0))
+    return (round(float(avg), 1) if avg is not None else 0.0, int(cnt or 0))
 
     
     
