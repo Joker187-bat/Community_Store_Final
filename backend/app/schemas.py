@@ -207,6 +207,12 @@ class ReviewsOut(BaseModel):
     
 
 # ------- BULLETIN ---------
+class PostIn(BaseModel):
+    title: str = Field (min_length=3,max_length=150)
+    body: str = Field(min_length=3, max_length=4000)
+    
+class FlagIn(BaseModel):
+    reason: str = Field(default="", max_length=255)
 class PostOut(BaseModel):
     id: int
     title: str
