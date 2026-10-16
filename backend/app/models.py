@@ -176,6 +176,7 @@ class BulletinPost(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     author_id: Mapped[int] = mapped_column(String(150))
+    title: Mapped[str] = mapped_column(String(150))
     body: Mapped [str] = mapped_column(Text)
     status: Mapped[PostStatus] = mapped_column(pg_enum(PostStatus, "post_status"), default=PostStatus.active)
     created_at: Mapped[datetime] = ts()

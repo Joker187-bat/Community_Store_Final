@@ -74,3 +74,5 @@ def delete_post(post_id: int, db: Session = Depends(get_db), user: User = Depend
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Post not Found.")
     if p.author_id != user.id and user.role != UserRole.admin:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "You can only delete your own posts.")
+    db.delete(p)
+    db.commit()
